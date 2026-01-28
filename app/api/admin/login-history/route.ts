@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getDatabase } from '@/lib/mongodb';
+import { getMongoClient } from "@/lib/mongodb";
 import { verifyAdmin } from '@/lib/auth/admin-helpers';
 import { LoginEvent } from '@/lib/types';
 
@@ -12,7 +12,10 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: adminAuth.error }, { status });
     }
 
-    const db = await getDatabase();
+   const client = getMongoClient();
+await client.connect();
+const db = client.db(process.env.MONGODB_DB || "team-flags-edu");
+
 
     // Parse query parameters for filtering
     const searchParams = request.nextUrl.searchParams;
