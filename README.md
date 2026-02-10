@@ -361,3 +361,7 @@ Created for [Chas Academy](https://chasacademy.se/) - IT- och Cybersäkerhetstek
 ---
 
 Happy learning!
+
+## Testing strategy
+This Next.js project validates builds using \`next build\`.
+Automated tests will be added in a future iteration.
