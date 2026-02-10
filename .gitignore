@@ -62,3 +62,5 @@ credentials/
 # Configuration with potential secrets
 config.local.*
 settings.local.*
+.env*
+node_modules
