@@ -12,6 +12,7 @@ spec:
       labels:
         app: backend
     spec:
+revisionHistoryLimit: 5
       containers:
         - name: backend
           image: backend:latest
