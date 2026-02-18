@@ -1,8 +1,8 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: frontend-config
+  name: backend-config
   namespace: boiler-room
 data:
-  NODE_ENV: "production"
   MONGODB_URI: "mongodb://mongo:27017/myapp"
+  NODE_ENV: "production"

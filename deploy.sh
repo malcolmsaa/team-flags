@@ -1,15 +1,26 @@
-#!/bin/bash
-set -e
+#!/usr/bin/env bash
+set -euo pipefail
 
-minikube start
-eval $(minikube docker-env)
+NS=boiler-room
 
-docker build -t frontend:latest .
-docker build -t backend:latest . || true
+kubectl get ns "$NS" >/dev/null 2>&1 || kubectl create ns "$NS"
 
-kubectl apply -f k8s/
-kubectl wait --for=condition=ready pod -l app=mongo --timeout=180s
-kubectl wait --for=condition=ready pod -l app=backend --timeout=180s
-kubectl wait --for=condition=ready pod -l app=frontend --timeout=180s
+kubectl apply -n "$NS" -f k8s/mongo-service.yaml
+kubectl apply -n "$NS" -f k8s/mongo-statefulset.yaml
+kubectl apply -n "$NS" -f k8s/backend-config.yaml
+kubectl apply -n "$NS" -f k8s/backend-deployment.yaml
+kubectl apply -n "$NS" -f k8s/backend-service.yaml
+kubectl apply -n "$NS" -f k8s/frontend-config.yaml
+kubectl apply -n "$NS" -f k8s/frontend-deployment.yaml
+kubectl apply -n "$NS" -f k8s/frontend-service.yaml
+kubectl apply -n "$NS" -f k8s/nginx-config.yaml
+kubectl apply -n "$NS" -f k8s/nginx-deployment.yaml
+kubectl apply -n "$NS" -f k8s/nginx-service.yaml
 
-minikube service frontend-service
+kubectl rollout status -n "$NS" deploy/backend
+kubectl rollout status -n "$NS" deploy/frontend
+kubectl rollout status -n "$NS" deploy/nginx
+kubectl rollout status -n "$NS" statefulset/mongo
+
+kubectl get all -n "$NS"
+kubectl get pvc -n "$NS"

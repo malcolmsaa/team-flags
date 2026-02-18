@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx
+  namespace: boiler-room
+  labels:
+    app: nginx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      volumes:
+        - name: nginx-configmap
+          configMap:
+            name: nginx-config
+        - name: nginx-confdir
+          emptyDir: {}
+      initContainers:
+        - name: copy-nginx-config
+          image: busybox:1.36
+          command: ["sh", "-c", "cp /cm/default.conf /conf/default.conf"]
+          volumeMounts:
+            - name: nginx-configmap
+              mountPath: /cm
+            - name: nginx-confdir
+              mountPath: /conf
+      containers:
+        - name: nginx
+          image: nginx:1.29-alpine
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: nginx-confdir
+              mountPath: /etc/nginx/conf.d
